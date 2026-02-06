@@ -459,6 +459,7 @@ const TechGrid = ({ theme, darkMode }: { theme: Theme, darkMode: boolean }) => (
 const AnimatedBackground = ({ theme, darkMode }: { theme: Theme, darkMode: boolean }) => (
   <div className={`fixed inset-0 z-[-2] overflow-hidden pointer-events-none transition-colors duration-1000 ${darkMode ? 'bg-slate-950' : (theme === 'green' ? 'bg-cyan-50' : 'bg-rose-50')}`}>
     <TechGrid theme={theme} darkMode={darkMode} />
+    {/* Optimization: Reduced blurs on mobile and added will-change-transform for performance */}
     <motion.div 
       animate={{ 
         scale: [1, 1.2, 1],
@@ -466,7 +467,8 @@ const AnimatedBackground = ({ theme, darkMode }: { theme: Theme, darkMode: boole
         opacity: [0.3, 0.5, 0.3]
       }}
       transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-      className={`absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full blur-[120px] ${theme === 'green' ? 'bg-teal-300/40' : 'bg-rose-300/40'}`} 
+      className={`absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full blur-[80px] md:blur-[120px] will-change-transform ${theme === 'green' ? 'bg-teal-300/40' : 'bg-rose-300/40'}`} 
+      style={{ transform: 'translate3d(0,0,0)' }}
     />
     <motion.div 
       animate={{ 
@@ -475,7 +477,8 @@ const AnimatedBackground = ({ theme, darkMode }: { theme: Theme, darkMode: boole
         opacity: [0.3, 0.5, 0.3]
       }}
       transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-      className={`absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full blur-[120px] ${theme === 'green' ? 'bg-blue-300/40' : 'bg-sky-300/40'}`} 
+      className={`absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full blur-[80px] md:blur-[120px] will-change-transform ${theme === 'green' ? 'bg-blue-300/40' : 'bg-sky-300/40'}`} 
+      style={{ transform: 'translate3d(0,0,0)' }}
     />
     <motion.div 
       animate={{ 
@@ -484,7 +487,8 @@ const AnimatedBackground = ({ theme, darkMode }: { theme: Theme, darkMode: boole
         opacity: [0.2, 0.4, 0.2]
       }}
       transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 5 }}
-      className={`absolute top-[30%] left-[30%] w-[40%] h-[40%] rounded-full blur-[100px] ${theme === 'green' ? 'bg-cyan-200/30' : 'bg-pink-200/30'}`} 
+      className={`absolute top-[30%] left-[30%] w-[40%] h-[40%] rounded-full blur-[60px] md:blur-[100px] will-change-transform ${theme === 'green' ? 'bg-cyan-200/30' : 'bg-pink-200/30'}`} 
+      style={{ transform: 'translate3d(0,0,0)' }}
     />
   </div>
 );
@@ -822,7 +826,7 @@ const LandingView = ({ setView, lang, setLang, theme, setTheme, darkMode, setDar
               <div className="relative">
                  <div className={`absolute -inset-4 bg-gradient-to-r ${theme === 'green' ? 'from-teal-100 to-cyan-100' : 'from-rose-100 to-pink-100'} rounded-[2rem] blur-2xl opacity-60`} />
                  <GlassCard darkMode={darkMode} className="relative p-8">
-                    <HeartCrack className={`w-12 h-12 ${colors.iconColor} mb-6`} />
+                    <Heart className={`w-12 h-12 ${colors.iconColor} mb-6`} />
                     <h3 className={`text-2xl font-bold ${t.text} mb-2`}>{txt.problemTitle}</h3>
                     <p className={`${t.textMuted} leading-relaxed`}>
                        {txt.problemDesc}
@@ -992,16 +996,16 @@ const AuthView = ({
 }: any) => {
   const txt = translations[lang];
   return (
-    <div className={`min-h-screen relative flex items-center justify-center p-4 bg-[#f8fafc] font-sans`}>
-      <div className={`bg-white rounded-[2.5rem] shadow-2xl p-8 md:p-12 w-full max-w-[440px] mx-auto`}>
+    <div className={`min-h-screen relative flex items-center justify-center p-4 font-sans ${darkMode ? 'bg-slate-950' : 'bg-[#f8fafc]'}`}>
+      <div className={`${darkMode ? 'bg-slate-900 border border-slate-800' : 'bg-white'} rounded-[2.5rem] shadow-2xl p-8 md:p-12 w-full max-w-[440px] mx-auto transition-colors`}>
         <div className="text-center mb-8">
           <div className="flex justify-center mb-6">
              <div className="scale-110">
                <BrandLogo className="h-24 w-auto" />
              </div>
           </div>
-          <h2 className={`text-3xl font-extrabold text-[#0f172a] mb-2 tracking-tight`}>{isSignUp ? txt.createAccTitle : txt.welcomeBack}</h2>
-          <p className={`text-slate-500 font-medium text-sm`}>{txt.beginJourney}</p>
+          <h2 className={`text-3xl font-extrabold mb-2 tracking-tight ${darkMode ? 'text-white' : 'text-[#0f172a]'}`}>{isSignUp ? txt.createAccTitle : txt.welcomeBack}</h2>
+          <p className={`${darkMode ? 'text-slate-400' : 'text-slate-500'} font-medium text-sm`}>{txt.beginJourney}</p>
         </div>
         
         <form onSubmit={onSubmit} className="space-y-5">
@@ -1013,8 +1017,9 @@ const AuthView = ({
             onChange={e => setEmail(e.target.value)} 
             required 
             autoFocus
-            className="rounded-xl border-2 border-slate-200 focus:border-[#14b8a6] focus:ring-0 text-slate-800 placeholder-slate-400 font-medium h-12"
-            labelClassName="text-slate-700 font-bold text-sm mb-1.5"
+            className={`rounded-xl border-2 focus:border-[#14b8a6] focus:ring-0 font-medium h-12 ${darkMode ? 'border-slate-700 bg-slate-800 text-white placeholder-slate-500' : 'border-slate-200 text-slate-800 placeholder-slate-400'}`}
+            labelClassName={`${darkMode ? 'text-slate-400' : 'text-slate-700'} font-bold text-sm mb-1.5`}
+            darkMode={darkMode}
           />
           <Input 
             type="password" 
@@ -1023,14 +1028,15 @@ const AuthView = ({
             value={password} 
             onChange={e => setPassword(e.target.value)} 
             required 
-            className="rounded-xl border-2 border-slate-200 focus:border-[#14b8a6] focus:ring-0 text-slate-800 placeholder-slate-400 font-medium h-12 tracking-widest"
-            labelClassName="text-slate-700 font-bold text-sm mb-1.5"
+            className={`rounded-xl border-2 focus:border-[#14b8a6] focus:ring-0 font-medium h-12 tracking-widest ${darkMode ? 'border-slate-700 bg-slate-800 text-white placeholder-slate-500' : 'border-slate-200 text-slate-800 placeholder-slate-400'}`}
+            labelClassName={`${darkMode ? 'text-slate-400' : 'text-slate-700'} font-bold text-sm mb-1.5`}
+            darkMode={darkMode}
           />
           {error && (
              <motion.div 
                initial={{ opacity: 0, y: -10 }} 
                animate={{ opacity: 1, y: 0 }} 
-               className={`p-3 bg-red-50 border border-red-100 text-red-600 text-sm rounded-xl flex items-start gap-2`}
+               className={`p-3 border text-sm rounded-xl flex items-start gap-2 ${darkMode ? 'bg-red-900/20 border-red-900 text-red-200' : 'bg-red-50 border-red-100 text-red-600'}`}
              >
                 <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
                 <div>
@@ -1044,7 +1050,7 @@ const AuthView = ({
           </Button>
         </form>
         
-        <div className={`text-center text-sm text-slate-500 mt-8 mb-6 font-medium`}>
+        <div className={`text-center text-sm ${darkMode ? 'text-slate-400' : 'text-slate-500'} mt-8 mb-6 font-medium`}>
           {isSignUp ? txt.haveAcc : "Don't have an account?"}{' '}
           <button type="button" onClick={() => setIsSignUp(!isSignUp)} className={`text-[#14b8a6] font-bold hover:underline ml-1`}>
             {isSignUp ? txt.signIn : "Sign Up"}
@@ -1052,7 +1058,7 @@ const AuthView = ({
         </div>
         
         <div className="text-center">
-           <button type="button" onClick={onBack} className={`text-slate-400 hover:text-slate-600 text-sm font-medium flex items-center justify-center gap-1.5 mx-auto transition-colors`}>
+           <button type="button" onClick={onBack} className={`${darkMode ? 'text-slate-500 hover:text-slate-300' : 'text-slate-400 hover:text-slate-600'} text-sm font-medium flex items-center justify-center gap-1.5 mx-auto transition-colors`}>
              <ArrowRight className="h-3.5 w-3.5 rotate-180" /> {txt.backHome}
            </button>
         </div>
